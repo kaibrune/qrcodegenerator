@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>QR-Code Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            text-align: center;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            box-sizing: border-box;
+        }
+        #qrcode {
+            margin-top: 20px;
+            text-align: center;
+        }
+        #download-btn {
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>QR-Code Generator</h1>
+    <div class="container">
+        <input type="text" id="url-input" placeholder="https://www.beispiel.de" />
+        <button id="generate-btn">QR-Code generieren</button>
+        <div id="qrcode"></div>
+        <button id="download-btn">QR-Code herunterladen</button>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        const generateBtn = document.getElementById('generate-btn');
+        const downloadBtn = document.getElementById('download-btn');
+        const qrcodeContainer = document.getElementById('qrcode');
+        let qrCode = null;
+
+        generateBtn.addEventListener('click', () => {
+            const url = document.getElementById('url-input').value.trim();
+            if (!url) {
+                alert('Bitte eine gültige URL eingeben.');
+                return;
+            }
+            qrcodeContainer.innerHTML = '';
+            qrCode = new QRCode(qrcodeContainer, {
+                text: url,
+                width: 256,
+                height: 256,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+            setTimeout(() => {
+                const canvas = qrcodeContainer.querySelector('canvas');
+                if (canvas) {
+                    downloadBtn.style.display = 'block';
+                }
+            }, 500);
+        });
+
+        downloadBtn.addEventListener('click', () => {
+            const canvas = qrcodeContainer.querySelector('canvas');
+            if (canvas) {
+                const pngUrl = canvas.toDataURL("image/png");
+                const downloadLink = document.createElement('a');
+                downloadLink.href = pngUrl;
+                downloadLink.download = 'qrcode.png';
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+            }
+        });
+    </script>
+</body>
+</html>
